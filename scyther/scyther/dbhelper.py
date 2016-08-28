@@ -9,7 +9,9 @@ class DBHelper:
         self.host = "localhost"
         self.port = "5432"
         self.tableName = "data1min"
-        self.getAll()
+        # self.tableName = kwargs.get('tbname',None)
+        # if not self.tableName:
+        #     self.tableName = "data1min"
         # User ID='bhuwania';Password='29jan2008';Host=localhost;Port=5432;Database=marketdatadb;Pooling=true;Min Pool Size=0;Max Pool Size=100;Connection Lifetime=0;
 
     def getConn(self):
@@ -29,7 +31,7 @@ class DBHelper:
             query = "INSERT INTO %s VALUES ('%s', '%s', %s, %s, %s, %s, %s)" %(self.tableName,timestamp,symbol,pricetuple.open,pricetuple.close,pricetuple.low,pricetuple.high,pricetuple.volume)
             cur.execute(query)
             conn.commit()
-            conn.close()
+            cur.close()
 
         except:
             print "Cannot insert"
@@ -57,14 +59,17 @@ class DBHelper:
         except:
             print "Cannot Fetch"
 
-    def getAll(self):
+    def getAll(self,tbname):
+        if not tbname:
+            tbname = self.tableName
+        try:
+            conn = self.getConn()
+            cur = conn.cursor()
+            query = "SELECT *  from %s" %tbname
+            cur.execute(query)
+            rows = cur.fetchall()
+            cur.close()
+            return rows
 
-        conn = self.getConn()
-        cur = conn.cursor()
-        query = "SELECT *  from %s" %self.tableName
-        cur.execute(query)
-        rows = cur.fetchall()
-        for row in rows:
-            print row[0]
-
-    print "Cannot Fetch All"
+        except:
+            print "Cannot Fetch All"
