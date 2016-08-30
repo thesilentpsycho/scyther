@@ -11,9 +11,11 @@ def scrape(symbol):
     link = "https://www.google.com/finance/getprices?q=%s&x=NSE&i=60&p=15d&f=d,c,o,h,l,v&df=cpct&auto=1" %symbol
 
     f = urllib.urlopen(link)
+    rawdata = f.read()
+    f.close()
     base_timestamp = 0
     priceTuple = namedtuple('priceTuple', ['close', 'high', 'low', 'open', 'volume'])
-    for idx, line in enumerate(f):
+    for idx, line in enumerate(rawdata.splitlines()):
         if (idx == 3):
             interval = int(line.strip().split('=')[1])
             print interval
@@ -27,16 +29,21 @@ def scrape(symbol):
                 timestamp = base_timestamp + datetime.timedelta(seconds=int(content[0]) * interval)
                 p = priceTuple._make(tuple(content[1:]))
             try:
-                myDB.insertPrice(timestamp=timestamp, symbol="HDFC", pricetuple=p)
+                myDB.insertPrice(timestamp=timestamp, symbol=symbol, pricetuple=p)
             except:
                 print "Insert Failed"
-
+    conn = myDB.getConn()
+    conn.commit()
+    conn.close()
 
 def run():
 
     myDB = DBHelper()
     scripsData = myDB.getAll(tbname = 'scrips')
+    conn = myDB.getConn()
+    conn.close()
     scripList = [scrip[0] for scrip in scripsData]
+    idx = 0
     for scrip in scripList:
         scrape(scrip)
         time.sleep(1)

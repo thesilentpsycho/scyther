@@ -9,6 +9,7 @@ class DBHelper:
         self.host = "localhost"
         self.port = "5432"
         self.tableName = "data1min"
+        self.conn = None
         # self.tableName = kwargs.get('tbname',None)
         # if not self.tableName:
         #     self.tableName = "data1min"
@@ -17,9 +18,10 @@ class DBHelper:
     def getConn(self):
 
         try:
-            conn = psycopg2.connect(database=self.dbName, user=self.user, password=self.password,
+            if self.conn is None:
+                self.conn = psycopg2.connect(database=self.dbName, user=self.user, password=self.password,
                                     host=self.host, port=self.port)
-            return conn
+            return self.conn
 
         except:
             print "Unable to connect to the database"
@@ -30,8 +32,6 @@ class DBHelper:
             cur = conn.cursor()
             query = "INSERT INTO %s VALUES ('%s', '%s', %s, %s, %s, %s, %s)" %(self.tableName,timestamp,symbol,pricetuple.open,pricetuple.close,pricetuple.low,pricetuple.high,pricetuple.volume)
             cur.execute(query)
-            conn.commit()
-            cur.close()
 
         except:
             print "Cannot insert"
