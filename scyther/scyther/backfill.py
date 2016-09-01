@@ -1,16 +1,18 @@
 import sys
 import psycopg2
-import urllib
+import urllib2
 import time
 from collections import namedtuple
 from dbhelper import DBHelper
 import datetime
+import requests
 
 def scrape(symbol):
     myDB = DBHelper()
-    link = "https://www.google.com/finance/getprices?q=%s&x=NSE&i=60&p=15d&f=d,c,o,h,l,v&df=cpct&auto=1" %symbol
-
-    f = urllib.urlopen(link)
+    url = "https://www.google.com/finance/getprices?q=%s&x=NSE&i=60&p=1d&f=d,c,o,h,l,v&df=cpct&auto=1" %symbol
+    req = urllib2.Request(url)
+    req.add_header('User-Agent', 'Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:38.0) Gecko/20100101 Firefox/38.0')
+    f = urllib2.urlopen(req)
     rawdata = f.read()
     f.close()
     base_timestamp = 0
@@ -18,7 +20,6 @@ def scrape(symbol):
     for idx, line in enumerate(rawdata.splitlines()):
         if (idx == 3):
             interval = int(line.strip().split('=')[1])
-            print interval
         if (idx >= 7):
             content = line.strip().split(',')
             if (content[0].startswith('a')):
@@ -46,8 +47,9 @@ def run():
     idx = 0
     for scrip in scripList:
         scrape(scrip)
+        print idx, scrip
         time.sleep(1)
-
+        idx += 1
 
 
 def main():

@@ -38,7 +38,7 @@ class DBHelper:
 
     def deletePrice(self):
         try:
-            cur = self.getConn()
+            conn = self.getConn()
 
         except:
             print "Cannot delete"
@@ -46,7 +46,7 @@ class DBHelper:
     def updatePrice(self):
 
         try:
-            cur = self.getConn()
+            conn = self.getConn()
 
         except:
             print "Cannot Update"
@@ -54,7 +54,7 @@ class DBHelper:
     def getPrice(self):
 
         try:
-            cur = self.getConn()
+            conn = self.getConn()
 
         except:
             print "Cannot Fetch"
