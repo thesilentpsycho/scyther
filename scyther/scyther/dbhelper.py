@@ -1,4 +1,5 @@
 import psycopg2
+import logging
 from datetime import datetime
 
 class DBHelper:
@@ -24,7 +25,7 @@ class DBHelper:
             return self.conn
 
         except:
-            print "Unable to connect to the database"
+            logging.error('Unable to connect to the database')
 
     def insertPrice(self,timestamp,symbol,pricetuple):
         try:
@@ -33,15 +34,16 @@ class DBHelper:
             query = "INSERT INTO %s VALUES ('%s', '%s', %s, %s, %s, %s, %s)" %(self.tableName,timestamp,symbol,pricetuple.open,pricetuple.close,pricetuple.low,pricetuple.high,pricetuple.volume)
             cur.execute(query)
 
-        except:
-            print "Cannot insert"
+        except Exception as e:
+            logging.error('Insert Failed for %s %s' %(timestamp,symbol))
+            raise
 
     def deletePrice(self):
         try:
             conn = self.getConn()
 
         except:
-            print "Cannot delete"
+            logging.error('Delete failed')
 
     def updatePrice(self):
 
@@ -49,7 +51,7 @@ class DBHelper:
             conn = self.getConn()
 
         except:
-            print "Cannot Update"
+            logging.error('Update Failed')
 
     def getPrice(self):
 
@@ -57,7 +59,7 @@ class DBHelper:
             conn = self.getConn()
 
         except:
-            print "Cannot Fetch"
+            logging.error('Fetch Price failed')
 
     def getAll(self,tbname):
         if not tbname:
@@ -72,4 +74,4 @@ class DBHelper:
             return rows
 
         except:
-            print "Cannot Fetch All"
+            logging.error('Error in fetching from %s' %tbname)
