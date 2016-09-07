@@ -10,7 +10,7 @@ import logging
 
 def scrape(symbol):
     myDB = DBHelper()
-    url = "https://www.google.com/finance/getprices?q=%s&x=NSE&i=60&p=1d&f=d,c,o,h,l,v&df=cpct&auto=1" %symbol
+    url = "https://www.google.com/finance/getprices?q=%s&x=NSE&i=60&p=2d&f=d,c,o,h,l,v&df=cpct&auto=1" %symbol
     req = urllib2.Request(url)
     req.add_header('User-Agent', 'Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:38.0) Gecko/20100101 Firefox/38.0')
     try:
