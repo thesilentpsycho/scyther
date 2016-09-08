@@ -7,22 +7,22 @@ def chunks(l, n):
     for i in range(0, len(l), n):
         query = ""
         temp = l[i:i + n]
-        yield ','.join(temp)
+        yield 'NSE:'+',NSE:'.join(temp)
 
 def run():
-    c = GoogleFinanceAPI()
+    financeapi = GoogleFinanceAPI()
     while 1:
         myDB = DBHelper()
         scripsData = myDB.getAll(tbname='scrips')
         conn = myDB.getConn()
         conn.close()
         scripList = [scrip[0] for scrip in scripsData]
-        chunkList = list(chunks(scripList,99))      #since google Api can only handle 99 scrips at a time. using 95
+        chunkList = list(chunks(scripList,99))      #since URL can only be 2000 characters long and google finance returns only 100 symbols at a time
         for chunk in chunkList:
-            quote = c.get(chunk)
-            print quote
-        break
-        time.sleep(1)
+            time.sleep(1)
+            quotelist = financeapi.get(chunk)
+            myDB.updatelivedata(quotelist)
+        time.sleep(2)
 
 def main():
     run()
